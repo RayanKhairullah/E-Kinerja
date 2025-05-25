@@ -47,7 +47,7 @@ class UserResource extends Resource
                     ->maxLength(255)
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
-                    ->dehydrated(fn (string $operation): bool => $operation === 'create' || filled(static::get('password')))
+                    ->dehydrated(fn (string $operation, $state): bool => $operation === 'create' || filled($state))
                     ->label('Kata Sandi'),
                 Forms\Components\Select::make('roles')
                     ->multiple()

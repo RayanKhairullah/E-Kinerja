@@ -39,7 +39,7 @@ class FeedbackResource extends Resource
             ->schema([
                 Forms\Components\Select::make('evaluation_id')
                     ->relationship('evaluation', 'id')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => "Evaluation for " . ($record->evaluatedUser->name ?? 'N/A') . " - " . ($record->category->name ?? 'N/A'))
+                    ->getOptionLabelFromRecordUsing(fn ($record) => "Evaluation for " . ($record->category->name ?? 'N/A'))
                     ->searchable()
                     ->preload()
                     ->required()
@@ -64,10 +64,6 @@ class FeedbackResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('evaluation.evaluatedUser.name')
-                    ->label('Evaluated User')
-                    ->searchable()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('evaluation.category.name')
                     ->label('Evaluation Category')
                     ->searchable()
@@ -91,11 +87,6 @@ class FeedbackResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                SelectFilter::make('evaluated_user')
-                    ->label('Evaluated User')
-                    ->relationship('evaluation.evaluatedUser', 'name')
-                    ->searchable()
-                    ->preload(),
                 SelectFilter::make('evaluation_category')
                     ->label('Evaluation Category')
                     ->relationship('evaluation.category', 'name')

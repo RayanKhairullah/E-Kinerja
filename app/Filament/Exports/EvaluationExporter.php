@@ -17,8 +17,8 @@ class EvaluationExporter extends Exporter
             ExportColumn::make('id')
                 ->label('ID'),
             ExportColumn::make('evaluated_by_id'),
-            ExportColumn::make('evaluated_user_id'),
             ExportColumn::make('evaluation_category_id'),
+            ExportColumn::make('jabatan'),
             ExportColumn::make('score'),
             ExportColumn::make('notes'),
             ExportColumn::make('status'),

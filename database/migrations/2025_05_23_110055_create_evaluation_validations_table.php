@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('evaluation_id')->constrained('evaluations')->onDelete('cascade');
             $table->foreignId('validator_id')->constrained('users')->onDelete('cascade'); // Validator yang memvalidasi
-            $table->enum('status', ['approved', 'rejected', 'revision_requested']);
+            $table->enum('status', ['pending', 'validated', 'needs_revision'])->default('pending'); 
             $table->text('notes')->nullable(); // Catatan dari validator
             $table->timestamps();
 

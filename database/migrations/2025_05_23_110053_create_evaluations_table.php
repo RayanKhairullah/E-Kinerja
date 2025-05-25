@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('evaluations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('evaluated_by_id')->constrained('users')->onDelete('cascade'); // Penilai
-            $table->foreignId('evaluated_user_id')->constrained('users')->onDelete('cascade'); // Guru yang dievaluasi
             $table->foreignId('evaluation_category_id')->constrained('evaluation_categories')->onDelete('cascade');
+            $table->string('jabatan')->nullable();
             $table->integer('score')->nullable(); // Skor penilaian, misalnya 1-5
             $table->text('notes')->nullable(); // Catatan tambahan dari penilai
-            $table->enum('status', ['draft', 'submitted', 'validated', 'needs_revision'])->default('draft'); // Status evaluasi
+            $table->enum('status', ['pending', 'validated', 'needs_revision'])->default('pending'); // Status evaluasi
             $table->timestamps();
         });
     }

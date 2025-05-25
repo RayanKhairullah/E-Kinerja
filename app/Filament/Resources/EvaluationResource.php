@@ -23,6 +23,8 @@ use App\Models\User; // Ditambahkan, untuk filter evaluatedBy, evaluatedUser
 use App\Models\EvaluationCategory; // Ditambahkan, untuk filter category
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
+use Illuminate\Support\Facades\Auth;
 
 class EvaluationResource extends Resource
 {
@@ -39,39 +41,38 @@ class EvaluationResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('evaluated_by_id')
-                    ->options(function () {
-                        return User::whereDoesntHave('roles', function ($query) {
-                            $query->where('name', 'admin');
-                        })->pluck('name', 'id');
-                    })
-                    ->searchable()
-                    ->preload()
-                    ->required()
-                    ->label('Evaluated By'),
-                Select::make('evaluated_user_id')
-                    ->options(function () {
-                        return User::whereDoesntHave('roles', function ($query) {
-                            $query->where('name', 'admin');
-                        })->pluck('name', 'id');
-                    })
-                    ->searchable()
-                    ->preload()
-                    ->required()
-                    ->label('Evaluated User'),
+                Hidden::make('evaluated_by_id')
+                    ->default(fn () => Auth::id())
+                    ->dehydrated(true),
+                // Select::make('evaluated_user_id')
+                //     ->options(function () {
+                //         return User::whereDoesntHave('roles', function ($query) {
+                //             $query->where('name', 'admin');
+                //         })->pluck('name', 'id');
+                //     })
+                //     ->searchable()
+                //     ->preload()
+                //     ->required()
+                //     ->label('Evaluated User'),
                 Select::make('evaluation_category_id')
                     ->relationship('category', 'name')
                     ->searchable()
                     ->preload()
                     ->required()
                     ->label('Evaluation Category'),
+                Forms\Components\TextInput::make('jabatan')
+                    ->maxLength(255)
+                    ->nullable()
+                    ->label('Jabatan'),
                 Forms\Components\TextInput::make('score')
                     ->numeric()
+                    ->placeholder('score 1 - 5')
                     ->default(null),
                 Forms\Components\Textarea::make('notes')
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('status')
-                    ->required(),
+                    ->placeholder('pending / validated / needs_revision')
+                    ->default(null),
             ]);
     }
 
@@ -83,12 +84,16 @@ class EvaluationResource extends Resource
                     ->label('Evaluated By')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('evaluatedUser.name')
-                    ->label('Evaluated User')
-                    ->searchable()
-                    ->sortable(),
+                // Tables\Columns\TextColumn::make('evaluatedUser.name')
+                //     ->label('Evaluated User')
+                //     ->searchable()
+                //     ->sortable(),
                 Tables\Columns\TextColumn::make('category.name')
                     ->label('Category')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('jabatan')
+                    ->label('Jabatan')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('score')
@@ -116,11 +121,11 @@ class EvaluationResource extends Resource
                     ->options(User::all()->pluck('name', 'id'))
                     ->searchable()
                     ->preload(),
-                SelectFilter::make('evaluated_user_id')
-                    ->label('Evaluated User')
-                    ->options(User::all()->pluck('name', 'id'))
-                    ->searchable()
-                    ->preload(),
+                // SelectFilter::make('evaluated_user_id')
+                //     ->label('Evaluated User')
+                //     ->options(User::all()->pluck('name', 'id'))
+                //     ->searchable()
+                //     ->preload(),
                 SelectFilter::make('evaluation_category_id')
                     ->label('Kategori Evaluasi')
                     ->relationship('category', 'name')
@@ -129,8 +134,8 @@ class EvaluationResource extends Resource
                 SelectFilter::make('status')
                     ->options([
                         'pending' => 'Pending',
-                        'approved' => 'Disetujui',
-                        'rejected' => 'Ditolak',
+                        'validated' => 'validated',
+                        'needs_revision' => 'needs revision',
                         // Tambahkan status lain jika ada
                     ])
                     ->label('Status Evaluasi'),

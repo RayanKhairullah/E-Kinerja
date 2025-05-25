@@ -39,7 +39,7 @@ class EvaluationValidationResource extends Resource
             ->schema([
                 Forms\Components\Select::make('evaluation_id')
                     ->relationship('evaluation', 'id')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => "Evaluation for " . ($record->evaluatedUser->name ?? 'N/A') . " - " . ($record->category->name ?? 'N/A'))
+                    ->getOptionLabelFromRecordUsing(fn ($record) => "Evaluation for " . ($record->category->name ?? 'N/A'))
                     ->searchable()
                     ->preload()
                     ->required()
@@ -54,8 +54,14 @@ class EvaluationValidationResource extends Resource
                     ->preload()
                     ->required()
                     ->label('Validator'),
-                Forms\Components\TextInput::make('status')
-                    ->required(),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'validated' => 'Validated',
+                        'needs_revision' => 'Needs Revision',
+                    ])
+                    ->required()
+                    ->label('Status'),
                 Forms\Components\Textarea::make('notes')
                     ->columnSpanFull(),
             ]);
@@ -65,10 +71,6 @@ class EvaluationValidationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('evaluation.evaluatedUser.name')
-                    ->label('Evaluated User')
-                    ->searchable()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('evaluation.category.name')
                     ->label('Evaluation Category')
                     ->searchable()
@@ -111,10 +113,10 @@ class EvaluationValidationResource extends Resource
                     ->preload(),
                 SelectFilter::make('status')
                     ->options([
-                        // Sesuaikan dengan status yang Anda miliki
                         'pending' => 'Pending',
-                        'validated' => 'Tervalidasi',
-                        'rejected' => 'Ditolak',
+                        'validated' => 'validated',
+                        'needs_revision' => 'needs revision',
+                        // Tambahkan status lain jika ada
                     ])
                     ->label('Status Validasi'),
                 Filter::make('created_at')

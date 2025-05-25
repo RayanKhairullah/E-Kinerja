@@ -13,6 +13,7 @@ class Evaluation extends Model
         'evaluated_by_id',
         'evaluated_user_id',
         'evaluation_category_id',
+        'jabatan',
         'score',
         'notes',
         'status',
